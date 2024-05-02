@@ -1,0 +1,16 @@
+body {
+    margin: auto;
+    font-family: "Helvetica Neue", sans-serif;
+    background-color: #969696;
+    max-width: 50vw;
+    display: grid; 
+    justify-content: center; 
+    align-items: center; 
+}
+
+.bloglist {
+    width: 50vw;
+    overflow-wrap: break-word;
+    background-color: rgb(46, 157, 255);
+    padding-bottom: .5em;
+}

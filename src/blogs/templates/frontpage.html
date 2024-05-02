@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+    <head>
+        <title>Blog app</title>
+        <link rel="stylesheet" href="static/main.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+ 
+    <body>
+        <h1>Blog application</h1>
+
+        <div>
+            {% if blogs|length == 0 %}
+                <p class="bloglist">You don't have any blogs</p>
+            {% endif %}
+
+            {% for blog in blogs %}
+                <p class="bloglist">{{blog}}</p>
+            {% endfor %}
+        </div>
+
+        <form method="post" action="flushblogs">
+            {% csrf_token %}
+            <input type="submit" value="Clear"/>
+        </form>
+ 
+        <h2>Create a new blog</h2>
+ 
+        <form method="post" action="createblog">
+			{% csrf_token %}
+            <input type="text" name="content"/>
+            <input type="submit" value="submit"/>
+        </form>
+ 
+    </body>
+</html>
