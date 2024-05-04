@@ -8,7 +8,14 @@
     </head>
  
     <body>
-        <h1>Blog application</h1>
+        <div class="header">
+            <h1>Blog application</h1>
+
+            <form method="post" action="logout" style="margin-left:auto;">
+                {% csrf_token %}
+                <input type="submit" value="Logout"/>
+            </form>
+        </div>
 
         <div class="bloglist">
             {% if blogs|length == 0 %}

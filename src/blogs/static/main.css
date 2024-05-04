@@ -23,3 +23,8 @@ body {
     max-height: 40vh;
     width: 55vw;
 }
+
+.header {
+    display: flex;
+    align-items: center;
+}
