@@ -10,6 +10,7 @@ urlpatterns = [
     path('checklogin', views.attemptedLoginView, name='attempted login'), # check credentials
     path('createaccount', views.createAccountView, name='createaccount'), # register page
     path('saveuser', views.saveNewUserView, name='savenewuser'), # save a new user
+    path('deleteuser/<int:pk>', views.deleteUserView, name='deleteuser'), # delete a user
     path('createblog', views.createBlogView, name='createblogs'), # save a new blog
     path('flushblogs', views.flushBlogsView, name='flushblogs') # delete all blogs
 ]
