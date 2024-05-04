@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
 from .models import Blog
 
 def frontPageView(request):
@@ -27,5 +29,45 @@ def flushBlogsView(request):
 
     if request.method == 'POST':
         Blog.objects.all().delete()
+
+    return redirect('/')
+
+def loginView(request):
+    """Render the login view"""
+    
+    return render(request, 'loginpage.html')
+
+def logoutView(request):
+    """Logout a user"""
+
+    logout(request)
+
+    return redirect('/login')
+
+def createAccountView(request):
+    """Render the form for creating a new user"""
+    
+    return render(request, 'registerpage.html')
+
+def attemptedLoginView(request):
+    """Check if a login attempt is valid"""
+    username = request.POST["username"]
+    password = request.POST["password"]
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+        return redirect('/')
+
+    return redirect('/login')
+
+def saveNewUserView(request):
+    """Save a new user to the database"""
+    username = request.POST["username"]
+    password = request.POST["password"]
+
+    User.objects.create_user(
+        username=username,
+        password=password
+    )
 
     return redirect('/')
