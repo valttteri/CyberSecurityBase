@@ -8,9 +8,18 @@ body {
     align-items: center; 
 }
 
-.bloglist {
+.blog {
     width: 50vw;
     overflow-wrap: break-word;
     background-color: rgb(46, 157, 255);
-    padding-bottom: .5em;
+    padding: .3em;
+    margin-bottom: .5em;
+    border: solid;
+    border-radius: .5em;
+}
+
+.bloglist {
+    overflow-y: auto;
+    max-height: 40vh;
+    width: 55vw;
 }
