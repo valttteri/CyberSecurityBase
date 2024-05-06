@@ -5,9 +5,20 @@ body {
     max-width: 50vw;
     display: grid; 
     justify-content: center; 
-    align-items: center; 
+    align-items: center;
+    max-height: 100vh;
 }
 
+ul {
+    list-style-type: none;
+    margin-top: 1em;
+    padding: 0;
+  }
+
+ul li {
+    margin-bottom: .5em;
+}
+  
 .blog {
     width: 50vw;
     overflow-wrap: break-word;
@@ -22,6 +33,7 @@ body {
     overflow-y: auto;
     max-height: 40vh;
     width: 55vw;
+    margin-bottom: 0;
 }
 
 .header {

@@ -1,15 +1,17 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
-from .models import Blog
+from .models import Blog, AppUser
 
 @login_required
 def frontPageView(request):
     """Render the front page of the application"""
 
+    # Get all blogs by the logged user
     blogs = Blog.objects.filter(Q(author=request.user))
+    blogs = blogs.order_by('-id').values()
 
     return render(request, 'frontpage.html', {'blogs' : blogs, 'user' : request.user})
 
@@ -57,8 +59,9 @@ def attemptedLoginView(request):
     """Check if a login attempt is valid"""
     username = request.POST["username"]
     password = request.POST["password"]
-    user = authenticate(request, username=username, password=password)
-    if user is not None:
+    user = AppUser.objects.get(username=username)
+
+    if user.check_password(password):
         login(request, user)
         return redirect('/')
 
@@ -68,10 +71,12 @@ def saveNewUserView(request):
     """Save a new user to the database"""
     username = request.POST["username"]
     password = request.POST["password"]
+    secret = request.POST["secret"]
 
-    User.objects.create_user(
+    AppUser.objects.create_user(
         username=username,
-        password=password
+        password=password,
+        secret=secret
     )
 
     return redirect('/')
@@ -79,8 +84,17 @@ def saveNewUserView(request):
 def deleteUserView(request, pk):
     """Delete a user"""
 
-    remove_this_user = User.objects.get(id=pk)
-    print(remove_this_user)
+    remove_this_user = AppUser.objects.get(id=pk)
     remove_this_user.delete()
 
     return redirect('/')
+
+def ownPageView(request, pk):
+    """Render the user's own information"""
+
+    try:
+        user_to_observe = AppUser.objects.get(id=pk)
+    except ObjectDoesNotExist:
+        return redirect('/')
+
+    return render(request, 'ownpage.html', { 'user' : user_to_observe })
