@@ -59,9 +59,10 @@ def attemptedLoginView(request):
     """Check if a login attempt is valid"""
     username = request.POST["username"]
     password = request.POST["password"]
-    user = AppUser.objects.get(username=username)
+    user = AppUser.objects.get(username=username, password=password)
 
-    if user.check_password(password):
+    #if user.check_password(password):
+    if user is not None:
         login(request, user)
         return redirect('/')
 
