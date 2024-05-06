@@ -40,7 +40,7 @@ class UserAccountManager(BaseUserManager):
         )
 
         # Hash the password and save the User object
-        user.set_password(password)
+        user.set_password(password) # comment out for hashing flaw
 
         user.save()
 

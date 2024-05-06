@@ -59,10 +59,11 @@ def attemptedLoginView(request):
     """Check if a login attempt is valid"""
     username = request.POST["username"]
     password = request.POST["password"]
-    user = AppUser.objects.get(username=username, password=password)
+    user = AppUser.objects.get(username=username)
 
-    #if user.check_password(password):
-    if user is not None:
+    # if user is not None:
+    # user = AppUser.objects.get(username=username, password=password)
+    if user.check_password(password):
         login(request, user)
         return redirect('/')
 
@@ -72,11 +73,13 @@ def saveNewUserView(request):
     """Save a new user to the database"""
     username = request.POST["username"]
     password = request.POST["password"]
+    email = request.POST["email"]
     secret = request.POST["secret"]
 
     AppUser.objects.create_user(
         username=username,
         password=password,
+        email=email,
         secret=secret
     )
 
