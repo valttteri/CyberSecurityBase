@@ -4,6 +4,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin
 )
+from datetime import datetime
 
 class UserAccountManager(BaseUserManager):
     """
@@ -72,3 +73,20 @@ class Blog(models.Model):
     title = models.CharField(max_length=50, default="")
     content = models.EmailField(max_length=100, default="")
     author = models.ForeignKey(AppUser, on_delete=models.CASCADE, null=True)
+
+class LogEntry(models.Model):
+    """
+    The secure version of the app will create log entries for important events
+    such as logging in
+    """
+
+    default_timestamp = datetime.strptime("01.01.1970 12:00:00", "%d.%m.%Y %H:%M:%S")
+
+    name = models.CharField(max_length=50, default="")
+    data = models.JSONField(default=dict, null=True)
+    time = models.DateTimeField(
+        auto_now = False,
+        auto_now_add = False,
+        blank = True,
+        default = f"{default_timestamp}"
+    )

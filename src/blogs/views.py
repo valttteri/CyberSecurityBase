@@ -3,7 +3,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
-from .models import Blog, AppUser
+from datetime import datetime
+from .models import Blog, AppUser, LogEntry
 
 @login_required
 def frontPageView(request):
@@ -13,7 +14,11 @@ def frontPageView(request):
     blogs = Blog.objects.filter(Q(author=request.user))
     blogs = blogs.order_by('-id').values()
 
-    return render(request, 'frontpage.html', {'blogs' : blogs, 'user' : request.user})
+    return render(
+        request,
+        'frontpage.html',
+        {'blogs' : blogs, 'user' : request.user}
+    )
 
 def createBlogView(request):
     """Create a new blog"""
@@ -61,11 +66,36 @@ def attemptedLoginView(request):
     password = request.POST["password"]
     user = AppUser.objects.get(username=username)
 
+    timestamp = datetime.now()
+    timestamp = timestamp.strftime("%Y-%m-%d %H:%M:%S")
+
     # if user is not None:
     # user = AppUser.objects.get(username=username, password=password)
     if user.check_password(password):
         login(request, user)
+
+        # log important events (5)
+        LogEntry.objects.create(
+            name = "Login attempt",
+            data = {
+                "username": username,
+                "password": password,
+                "isValid": True
+            },
+            time = timestamp
+        )
+
         return redirect('/')
+    
+    LogEntry.objects.create(
+        name = "Login attempt",
+        data = {
+            "username": username,
+            "password": password,
+            "isValid": False
+        },
+        time = timestamp
+    )
 
     return redirect('/login')
 
@@ -96,9 +126,11 @@ def deleteUserView(request, pk):
 def ownPageView(request, pk):
     """Render the user's own information"""
 
+    log_entries = LogEntry.objects.all()
+
     try:
         user_to_observe = AppUser.objects.get(id=pk)
     except ObjectDoesNotExist:
         return redirect('/')
 
-    return render(request, 'ownpage.html', { 'user' : user_to_observe })
+    return render(request, 'ownpage.html', { 'user' : user_to_observe, 'log_entries' : log_entries  })

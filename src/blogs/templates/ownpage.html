@@ -23,6 +23,19 @@
             <li><b>Email:</b> {{ user.email }}</li>
             <li><b>My biggest secret:</b> {{ user.secret }}</li>
         </ul>
+    
+        {% if user.is_superuser == True %}
+            <h3 style="margin-bottom:auto;">Log entries</h3>
+            <ul>
+                {% for entry in log_entries %}
+                    <li class="log_entry">
+                        <p>Name: {{ entry.name }}</p>
+                        <p>Data: {{ entry.data }}</p>
+                        <p>Time: {{ entry.time }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
     </body>
 
 </html>
