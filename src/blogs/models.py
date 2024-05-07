@@ -70,8 +70,8 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
 class Blog(models.Model):
     """Model for student organizations"""
 
-    title = models.CharField(max_length=50, default="")
-    content = models.EmailField(max_length=100, default="")
+    title = models.CharField(max_length=30, default="")
+    content = models.CharField(max_length=1000, default="")
     author = models.ForeignKey(AppUser, on_delete=models.CASCADE, null=True)
 
 class LogEntry(models.Model):

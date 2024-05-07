@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from datetime import datetime
 from string import ascii_uppercase, ascii_lowercase, punctuation
@@ -13,69 +14,82 @@ def frontPageView(request):
 
     # Get all blogs by the logged user
     blogs = Blog.objects.filter(Q(author=request.user))
-    blogs = blogs.order_by('-id').values()
+    blogs = blogs.order_by("-id").values()
 
     return render(
         request,
-        'frontpage.html',
-        {'blogs' : blogs, 'user' : request.user}
+        "frontpage.html",
+        {"blogs" : blogs, "user" : request.user}
     )
 
 def createBlogView(request):
     """Create a new blog"""
 
-    if request.method == 'POST':
-        blog_content = request.POST.get('content', '').strip()
-        blog_title = request.POST.get('title', '').strip()
-        if 1000 > len(blog_content) > 0:
+    if request.method == "POST":
+        blog_content = request.POST.get("content", "").strip()
+        blog_title = request.POST.get("title", "").strip()
+        if (
+            0 < len(blog_content) < 1000
+            and 0 < len(blog_title) < 30
+        ):
             Blog.objects.create(
                 title=blog_title,
                 content=blog_content,
                 author=request.user
             )
 
-    return redirect('/')
+            messages.success(request, "Blog saved successfully!")
+        else:
+            messages.error(request, "Limits: title < 30 characters, content < 1000 characters")
+
+    return redirect("/")
 
 def flushBlogsView(request):
     """Remove all blogs"""
 
-    if request.method == 'POST':
+    if request.method == "POST":
         blogs_to_delete = Blog.objects.filter(Q(author=request.user))
         blogs_to_delete.delete()
 
-    return redirect('/')
+    return redirect("/")
 
 def loginView(request):
     """Render the login form"""
     
-    return render(request, 'loginpage.html')
+    return render(request, "loginpage.html")
 
 def logoutView(request):
     """Logout a user"""
 
     logout(request)
+    messages.success(request, "Logout successful!")
 
-    return redirect('/login')
+    return redirect("/login")
 
 def createAccountView(request):
     """Render account creation form"""
 
-    return render(request, 'registerpage.html')
+    return render(request, "registerpage.html")
 
 def attemptedLoginView(request):
     """Check if a login attempt is valid"""
     username = request.POST["username"]
     password = request.POST["password"]
-    user = AppUser.objects.get(username=username)
+
+    try:
+        user = AppUser.objects.get(username=username)
+        #user = AppUser.objects.get(username=username, password=password)
+    except ObjectDoesNotExist:
+        messages.error(request, "Invalid credentials")
+        return redirect("/login")
 
     timestamp = datetime.now()
     timestamp = timestamp.strftime("%Y-%m-%d %H:%M:%S")
 
-    # if user is not None:
-    # user = AppUser.objects.get(username=username, password=password)
+    #if user is not None:
     if user.check_password(password):
         login(request, user)
-
+        messages.success(request, "Login successful!")
         # log important events (5)
         LogEntry.objects.create(
             name = "Login attempt",
@@ -87,8 +101,9 @@ def attemptedLoginView(request):
             time = timestamp
         )
 
-        return redirect('/')
+        return redirect("/")
     
+    messages.error(request, "Invalid credentials")
     LogEntry.objects.create(
         name = "Login attempt",
         data = {
@@ -99,7 +114,7 @@ def attemptedLoginView(request):
         time = timestamp
     )
 
-    return redirect('/login')
+    return redirect("/login")
 
 def saveNewUserView(request):
     """Save a new user to the database"""
@@ -108,16 +123,27 @@ def saveNewUserView(request):
     email = request.POST["email"]
     secret = request.POST["secret"]
 
+    if len(username) < 5:
+        messages.error(request, "Enter a valid username")
+        return redirect("createaccount")
+
     if password_isvalid(password):
+        messages.success(request, "Account created successfully!")
         AppUser.objects.create_user(
             username=username,
             password=password,
             email=email,
             secret=secret
         )
-        return redirect('/')
+        return redirect("/")
     
-    return redirect('createaccount')
+    messages.error(
+        request,
+        "Password must be at least 8 characters long and\n"
+        "contain uppercase, lowercase and special characters"
+    )
+    
+    return redirect("createaccount")
 
 def password_isvalid(password: str):
     """
@@ -152,17 +178,19 @@ def deleteUserView(request, pk):
     remove_this_user = AppUser.objects.get(id=pk)
     remove_this_user.delete()
 
-    return redirect('/')
+    messages.success(request, "Account deleted successfully!")
+
+    return redirect("/")
 
 def ownPageView(request, pk):
-    """Render the user's own information"""
+    """Render the user"s own information"""
 
     log_entries = LogEntry.objects.all()
-    log_entries = log_entries.order_by('-id').values()
+    log_entries = log_entries.order_by("-id").values()
 
     try:
         user_to_observe = AppUser.objects.get(id=pk)
     except ObjectDoesNotExist:
-        return redirect('/')
+        return redirect("/")
 
-    return render(request, 'ownpage.html', { 'user' : user_to_observe, 'log_entries' : log_entries  })
+    return render(request, "ownpage.html", { "user" : user_to_observe, "log_entries" : log_entries  })
