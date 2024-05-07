@@ -86,11 +86,11 @@ def attemptedLoginView(request):
     timestamp = datetime.now()
     timestamp = timestamp.strftime("%Y-%m-%d %H:%M:%S")
 
-    #if user is not None:
-    if user.check_password(password):
+    if user is not None:
+    #if user.check_password(password):
         login(request, user)
         messages.success(request, "Login successful!")
-        # log important events (5)
+
         LogEntry.objects.create(
             name = "Login attempt",
             data = {
@@ -126,6 +126,22 @@ def saveNewUserView(request):
     if len(username) < 5:
         messages.error(request, "Enter a valid username")
         return redirect("createaccount")
+    
+    """COMMENT OUT THE CODE BELOW"""
+    
+    messages.success(request, "Account created successfully!")
+    AppUser.objects.create_user(
+        username=username,
+        password=password,
+        email=email,
+        secret=secret
+    )
+    return redirect("/")
+
+    """COMMENT OUT THE CODE ABOVE"""
+
+
+    """FIX FOR IDENTIFICATION AND AUTHENTICATION FAILURES (7)
 
     if password_isvalid(password):
         messages.success(request, "Account created successfully!")
@@ -136,7 +152,7 @@ def saveNewUserView(request):
             secret=secret
         )
         return redirect("/")
-    
+
     messages.error(
         request,
         "Password must be at least 8 characters long and\n"
@@ -144,6 +160,8 @@ def saveNewUserView(request):
     )
     
     return redirect("createaccount")
+
+    """
 
 def password_isvalid(password: str):
     """
@@ -176,6 +194,12 @@ def deleteUserView(request, pk):
     """Delete a user"""
 
     remove_this_user = AppUser.objects.get(id=pk)
+
+    # FIX FOR BROKEN ACCESS CONTROL (1)
+       
+    #if request.user != remove_this_user:
+    #    return redirect('/')
+
     remove_this_user.delete()
 
     messages.success(request, "Account deleted successfully!")
@@ -192,5 +216,10 @@ def ownPageView(request, pk):
         user_to_observe = AppUser.objects.get(id=pk)
     except ObjectDoesNotExist:
         return redirect("/")
+    
+    # FIX FOR BROKEN ACCESS CONTROL (1)
+
+    #if request.user != user_to_observe:
+    #    return redirect("/")
 
     return render(request, "ownpage.html", { "user" : user_to_observe, "log_entries" : log_entries  })

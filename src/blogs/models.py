@@ -40,8 +40,9 @@ class UserAccountManager(BaseUserManager):
             **other_fields
         )
 
-        # Hash the password and save the User object
-        user.set_password(password) # comment out for hashing flaw
+        # FIX FOR CRYPTOGRAPHIC FAILURES (2)
+
+        #user.set_password(password)
 
         user.save()
 
