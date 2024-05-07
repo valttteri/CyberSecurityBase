@@ -12,7 +12,6 @@ from .models import Blog, AppUser, LogEntry
 def frontPageView(request):
     """Render the front page of the application"""
 
-    # Get all blogs by the logged user
     blogs = Blog.objects.filter(Q(author=request.user))
     blogs = blogs.order_by("-id").values()
 
@@ -22,6 +21,7 @@ def frontPageView(request):
         {"blogs" : blogs, "user" : request.user}
     )
 
+@login_required
 def createBlogView(request):
     """Create a new blog"""
 
@@ -44,8 +44,9 @@ def createBlogView(request):
 
     return redirect("/")
 
+@login_required
 def flushBlogsView(request):
-    """Remove all blogs"""
+    """Remove all blogs of the logged user"""
 
     if request.method == "POST":
         blogs_to_delete = Blog.objects.filter(Q(author=request.user))
@@ -77,8 +78,11 @@ def attemptedLoginView(request):
     password = request.POST["password"]
 
     try:
-        user = AppUser.objects.get(username=username)
-        #user = AppUser.objects.get(username=username, password=password)
+        # FIX FOR CRYPTOGRAPHIC FAILURES (2)
+        # Uncomment the following line & comment out the one below it
+
+        #user = AppUser.objects.get(username=username)
+        user = AppUser.objects.get(username=username, password=password)
     except ObjectDoesNotExist:
         messages.error(request, "Invalid credentials")
         return redirect("/login")
@@ -86,11 +90,18 @@ def attemptedLoginView(request):
     timestamp = datetime.now()
     timestamp = timestamp.strftime("%Y-%m-%d %H:%M:%S")
 
+    # FIX FOR CRYPTOGRAPHIC FAILURES (2)
+    # Comment out the following line & uncomment the one below it
+
     if user is not None:
     #if user.check_password(password):
         login(request, user)
         messages.success(request, "Login successful!")
 
+        # FIX FOR SECURITY LOGGING AND MONITORING FAILURES (9)
+        # Uncomment the following
+
+        """
         LogEntry.objects.create(
             name = "Login attempt",
             data = {
@@ -100,10 +111,16 @@ def attemptedLoginView(request):
             },
             time = timestamp
         )
+        """        
 
         return redirect("/")
     
     messages.error(request, "Invalid credentials")
+
+    # FIX FOR SECURITY LOGGING AND MONITORING FAILURES (9)
+    # Uncomment the following
+
+    """
     LogEntry.objects.create(
         name = "Login attempt",
         data = {
@@ -113,6 +130,7 @@ def attemptedLoginView(request):
         },
         time = timestamp
     )
+    """
 
     return redirect("/login")
 
@@ -127,8 +145,9 @@ def saveNewUserView(request):
         messages.error(request, "Enter a valid username")
         return redirect("createaccount")
     
-    """COMMENT OUT THE CODE BELOW"""
-    
+    # FIX FOR IDENTIFICATION AND AUTHENTICATION FAILURES (7)
+    # Comment out the code below
+
     messages.success(request, "Account created successfully!")
     AppUser.objects.create_user(
         username=username,
@@ -138,11 +157,9 @@ def saveNewUserView(request):
     )
     return redirect("/")
 
-    """COMMENT OUT THE CODE ABOVE"""
+    # Comment out the code above & uncomment the code below
 
-
-    """FIX FOR IDENTIFICATION AND AUTHENTICATION FAILURES (7)
-
+    """
     if password_isvalid(password):
         messages.success(request, "Account created successfully!")
         AppUser.objects.create_user(
@@ -190,12 +207,14 @@ def password_isvalid(password: str):
         return False
     return True
 
+@login_required
 def deleteUserView(request, pk):
     """Delete a user"""
 
     remove_this_user = AppUser.objects.get(id=pk)
 
     # FIX FOR BROKEN ACCESS CONTROL (1)
+    # Uncomment the following two lines
        
     #if request.user != remove_this_user:
     #    return redirect('/')
@@ -206,6 +225,7 @@ def deleteUserView(request, pk):
 
     return redirect("/")
 
+@login_required
 def ownPageView(request, pk):
     """Render the user"s own information"""
 
@@ -218,6 +238,7 @@ def ownPageView(request, pk):
         return redirect("/")
     
     # FIX FOR BROKEN ACCESS CONTROL (1)
+    # Uncomment the following two lines
 
     #if request.user != user_to_observe:
     #    return redirect("/")
