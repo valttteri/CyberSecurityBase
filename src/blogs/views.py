@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import Q
 from datetime import datetime
+from string import ascii_uppercase, ascii_lowercase, punctuation
 from .models import Blog, AppUser, LogEntry
 
 @login_required
@@ -39,7 +40,8 @@ def flushBlogsView(request):
     """Remove all blogs"""
 
     if request.method == 'POST':
-        Blog.objects.all().delete()
+        blogs_to_delete = Blog.objects.filter(Q(author=request.user))
+        blogs_to_delete.delete()
 
     return redirect('/')
 
@@ -106,14 +108,43 @@ def saveNewUserView(request):
     email = request.POST["email"]
     secret = request.POST["secret"]
 
-    AppUser.objects.create_user(
-        username=username,
-        password=password,
-        email=email,
-        secret=secret
-    )
+    if password_isvalid(password):
+        AppUser.objects.create_user(
+            username=username,
+            password=password,
+            email=email,
+            secret=secret
+        )
+        return redirect('/')
+    
+    return redirect('createaccount')
 
-    return redirect('/')
+def password_isvalid(password: str):
+    """
+    Custom password validator
+    """
+    has_uppercase = False
+    has_lowercase = False
+    has_special_char = False
+
+    if len(password) < 8:
+        return False
+
+    for char in password:
+        if char in ascii_uppercase:
+            has_uppercase = True
+        if char in ascii_lowercase:
+            has_lowercase = True
+        if char in punctuation:
+            has_special_char = True
+
+    if (
+        not has_uppercase
+        or not has_lowercase
+        or not has_special_char
+    ):
+        return False
+    return True
 
 def deleteUserView(request, pk):
     """Delete a user"""
@@ -127,6 +158,7 @@ def ownPageView(request, pk):
     """Render the user's own information"""
 
     log_entries = LogEntry.objects.all()
+    log_entries = log_entries.order_by('-id').values()
 
     try:
         user_to_observe = AppUser.objects.get(id=pk)
