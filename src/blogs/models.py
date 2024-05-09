@@ -40,7 +40,7 @@ class UserAccountManager(BaseUserManager):
             **other_fields
         )
 
-        # FIX FOR CRYPTOGRAPHIC FAILURES (2)
+        # FIX FOR CRYPTOGRAPHIC FAILURES (FLAW 2)
 
         #user.set_password(password)
 

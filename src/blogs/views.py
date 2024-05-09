@@ -78,11 +78,11 @@ def attemptedLoginView(request):
     password = request.POST["password"]
 
     try:
-        # FIX FOR CRYPTOGRAPHIC FAILURES (2)
+        # FIX FOR CRYPTOGRAPHIC FAILURES (FLAW 2)
         # Uncomment the following line & comment out the one below it
 
-        #user = AppUser.objects.get(username=username)
-        user = AppUser.objects.get(username=username, password=password)
+        #user = AppUser.objects.get(username=username) # uncomment
+        user = AppUser.objects.get(username=username, password=password) # comment out
     except ObjectDoesNotExist:
         messages.error(request, "Invalid credentials")
         return redirect("/login")
@@ -90,16 +90,16 @@ def attemptedLoginView(request):
     timestamp = datetime.now()
     timestamp = timestamp.strftime("%Y-%m-%d %H:%M:%S")
 
-    # FIX FOR CRYPTOGRAPHIC FAILURES (2)
+    # FIX FOR CRYPTOGRAPHIC FAILURES (FLAW 2)
     # Comment out the following line & uncomment the one below it
 
-    if user is not None:
-    #if user.check_password(password):
+    if user is not None: # comment out
+    #if user.check_password(password): # uncomment
         login(request, user)
         messages.success(request, "Login successful!")
 
-        # FIX FOR SECURITY LOGGING AND MONITORING FAILURES (9)
-        # Uncomment the following
+        # FIX FOR SECURITY LOGGING AND MONITORING FAILURES (FLAW 5)
+        # Uncomment the following code
 
         """
         LogEntry.objects.create(
@@ -117,8 +117,8 @@ def attemptedLoginView(request):
     
     messages.error(request, "Invalid credentials")
 
-    # FIX FOR SECURITY LOGGING AND MONITORING FAILURES (9)
-    # Uncomment the following
+    # FIX FOR SECURITY LOGGING AND MONITORING FAILURES (FLAW 5)
+    # Uncomment the following code
 
     """
     LogEntry.objects.create(
@@ -145,7 +145,7 @@ def saveNewUserView(request):
         messages.error(request, "Enter a valid username")
         return redirect("createaccount")
     
-    # FIX FOR IDENTIFICATION AND AUTHENTICATION FAILURES (7)
+    # FIX FOR IDENTIFICATION AND AUTHENTICATION FAILURES (FLAW 4)
     # Comment out the code below
 
     messages.success(request, "Account created successfully!")
@@ -213,7 +213,7 @@ def deleteUserView(request, pk):
 
     remove_this_user = AppUser.objects.get(id=pk)
 
-    # FIX FOR BROKEN ACCESS CONTROL (1)
+    # FIX FOR BROKEN ACCESS CONTROL (FLAW 1)
     # Uncomment the following two lines
        
     #if request.user != remove_this_user:
@@ -237,7 +237,7 @@ def ownPageView(request, pk):
     except ObjectDoesNotExist:
         return redirect("/")
     
-    # FIX FOR BROKEN ACCESS CONTROL (1)
+    # FIX FOR BROKEN ACCESS CONTROL (FLAW 1)
     # Uncomment the following two lines
 
     #if request.user != user_to_observe:

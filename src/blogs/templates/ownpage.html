@@ -23,7 +23,8 @@
             <li><b>Email:</b> {{ user.email }}</li>
             <li><b>My biggest secret:</b> {{ user.secret }}</li>
         </ul>
-    
+        
+        <!--Admins can observe security log entries here-->
         {% if user.is_superuser == True %}
             <h3 style="margin-bottom:auto;">Log entries</h3>
             <ul>
