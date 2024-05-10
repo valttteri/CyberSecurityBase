@@ -41,6 +41,7 @@ class UserAccountManager(BaseUserManager):
         )
 
         # FIX FOR CRYPTOGRAPHIC FAILURES (FLAW 2)
+        # Uncomment the next line
 
         #user.set_password(password)
 
