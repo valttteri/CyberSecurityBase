@@ -19,6 +19,7 @@
 
         <ul style="max-width: 55vw">
             <li><b>Username:</b> {{ user.username }}</li>
+            <!--FIX FOR CRYPTOGRAPHIC FAILURES (FLAW 2): Comment out the following line-->
             <li style="overflow-wrap: break-word;"><b>Password:</b> {{ user.password }}</li>
             <li><b>Email:</b> {{ user.email }}</li>
             <li><b>My biggest secret:</b> {{ user.secret }}</li>
