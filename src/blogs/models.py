@@ -70,7 +70,7 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ["username", "password", "secret"]
 
 class Blog(models.Model):
-    """Model for student organizations"""
+    """Model for blog posts"""
 
     title = models.CharField(max_length=30, default="")
     content = models.CharField(max_length=1000, default="")
