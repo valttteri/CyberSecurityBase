@@ -3,8 +3,8 @@
 ## Description
 
 This is the CSB Course Project I with flaws from the OWASP 2021 top 10 list. It is a simple blog application where users can write their own blog posts.
-In order to write a blog post, users must create an account. Then they can access the front page of the
-application where writing and viewing blog posts is possible. Users can view observe their own information at the profile page.
+In order to use the application, users must log in first. Logged users can access the front page of the
+application where writing and viewing blog posts is possible. Users can observe their own information at the profile page.
 Deleting an account is also possible.
 
 ## Instuctions
