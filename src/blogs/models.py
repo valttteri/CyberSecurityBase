@@ -41,7 +41,7 @@ class UserAccountManager(BaseUserManager):
         )
 
         # No password hashing available (FLAW 2)
-        # Fix (3/4): Use the set_password() function to hash passwords
+        # Fix (3/3): Use the set_password() function to hash passwords
 
         #user.set_password(password)
 

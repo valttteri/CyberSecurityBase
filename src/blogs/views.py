@@ -82,7 +82,7 @@ def attemptedLoginView(request):
 
     try:
         # No password hashing available (FLAW 2)
-        # Fix (1/4): Modify the login system to support hashed passwords
+        # Fix (1/3): Modify the login system to support hashed passwords
 
         #user = AppUser.objects.get(username=username) # uncomment
         user = AppUser.objects.get(username=username, password=password) # comment out
@@ -94,7 +94,7 @@ def attemptedLoginView(request):
     timestamp = timestamp.strftime("%Y-%m-%d %H:%M:%S")
 
     # No password hashing available (FLAW 2)
-    # Fix (2/4):
+    # Fix (2/3):
     # The login system will now compare the raw password received as input
     # to the hashed password found in the database with the check_password() method.
 
