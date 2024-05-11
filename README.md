@@ -40,8 +40,6 @@ You can also create other accounts. Note that if you want to login to the Django
 
 ## Flaws 
 
-My project is a simple blog application where users can write their own blog posts. Instructions for running the application can be found in the repository.
-
 ### FLAW 1: Broken Access Control
 Flaw locations:
 https://github.com/valttteri/CyberSecurityBase/blob/ea7cc6870bdac257615c1ec82b1c6ab9a119fdb7/src/blogs/views.py#L224 
