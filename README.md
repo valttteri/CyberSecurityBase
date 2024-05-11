@@ -7,7 +7,7 @@ In order to use the application, users must log in first. Logged users can acces
 application where writing and viewing blog posts is possible. Users can observe their own information at the profile page.
 Deleting an account is also possible.
 
-## Instuctions
+## Instructions
 
 Start by cloning the project to your machine.
 ```
