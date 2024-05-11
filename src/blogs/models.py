@@ -40,8 +40,8 @@ class UserAccountManager(BaseUserManager):
             **other_fields
         )
 
-        # FIX FOR CRYPTOGRAPHIC FAILURES (FLAW 2)
-        # Uncomment the next line
+        # No password hashing available (FLAW 2)
+        # Fix (3/4): Use the set_password() function to hash passwords
 
         #user.set_password(password)
 

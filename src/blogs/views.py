@@ -73,13 +73,16 @@ def createAccountView(request):
     return render(request, "registerpage.html")
 
 def attemptedLoginView(request):
-    """Check if a login attempt is valid"""
+    """
+    Check if a login attempt is valid. This login system does not support hashed passwords
+    and must be fixed.
+    """
     username = request.POST["username"]
     password = request.POST["password"]
 
     try:
-        # FIX FOR CRYPTOGRAPHIC FAILURES (FLAW 2)
-        # Uncomment the following line & comment out the one below it
+        # No password hashing available (FLAW 2)
+        # Fix (1/4): Modify the login system to support hashed passwords
 
         #user = AppUser.objects.get(username=username) # uncomment
         user = AppUser.objects.get(username=username, password=password) # comment out
@@ -90,15 +93,18 @@ def attemptedLoginView(request):
     timestamp = datetime.now()
     timestamp = timestamp.strftime("%Y-%m-%d %H:%M:%S")
 
-    # FIX FOR CRYPTOGRAPHIC FAILURES (FLAW 2)
-    # Comment out the following line & uncomment the one below it
+    # No password hashing available (FLAW 2)
+    # Fix (2/4):
+    # The login system will now compare the raw password received as input
+    # to the hashed password found in the database with the check_password() method.
 
     if user is not None: # comment out
     #if user.check_password(password): # uncomment
         login(request, user)
         messages.success(request, "Login successful!")
 
-        # FIX FOR SECURITY LOGGING AND MONITORING FAILURES (FLAW 5)
+        # No security logging or monitoring available (FLAW 5)
+        # Fix by adding a logging system that will create a new entry for each login attempt. 
         # Uncomment the following code
 
         """
@@ -117,7 +123,8 @@ def attemptedLoginView(request):
     
     messages.error(request, "Invalid credentials")
 
-    # FIX FOR SECURITY LOGGING AND MONITORING FAILURES (FLAW 5)
+    # No security logging or monitoring available (FLAW 5)
+    # Fix by adding a logging system that will create a new entry for each login attempt.
     # Uncomment the following code
 
     """
@@ -145,8 +152,9 @@ def saveNewUserView(request):
         messages.error(request, "Enter a valid username")
         return redirect("createaccount")
     
-    # FIX FOR IDENTIFICATION AND AUTHENTICATION FAILURES (FLAW 4)
-    # Comment out the code below
+    # No password validation when creating an account (FLAW 4)
+    # Fix by enabling password validation
+    # Comment out the following block of code
 
     messages.success(request, "Account created successfully!")
     AppUser.objects.create_user(
@@ -157,7 +165,7 @@ def saveNewUserView(request):
     )
     return redirect("/")
 
-    # Comment out the code above & uncomment the code below
+    # Comment out the code above & uncomment the code below (FLAW 4)
 
     """
     if password_isvalid(password):
@@ -213,8 +221,8 @@ def deleteUserView(request, pk):
 
     remove_this_user = AppUser.objects.get(id=pk)
 
-    # FIX FOR BROKEN ACCESS CONTROL (FLAW 1)
-    # Uncomment the following two lines
+    # Anyone can delete other users' accounts (FLAW 1)
+    # Fix by confirming the identity of the user attempting to delete an account
        
     #if request.user != remove_this_user:
     #    return redirect('/')
@@ -237,8 +245,8 @@ def ownPageView(request, pk):
     except ObjectDoesNotExist:
         return redirect("/")
     
-    # FIX FOR BROKEN ACCESS CONTROL (FLAW 1)
-    # Uncomment the following two lines
+    # Anyone can view other users' profiles (FLAW 1)
+    # Fix by confirming the identity of the user attempting view a prfile
 
     #if request.user != user_to_observe:
     #    return redirect("/")
